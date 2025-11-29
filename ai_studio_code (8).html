@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Royal Coin Album</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- 格式高い明朝体フォント -->
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Shippori+Mincho:wght@400;600&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        serif: ['"Shippori Mincho"', 'serif'],
+                        header: ['"Cinzel"', 'serif'],
+                    },
+                    colors: {
+                        'velvet': '#0a1a3c', // 深いベルベットブルー
+                        'velvet-dark': '#050e21',
+                        'wood-light': '#8b5e3c',
+                        'wood-dark': '#5d3a24',
+                        'gold-light': '#fceeb5',
+                        'gold-main': '#d4af37',
+                        'gold-dark': '#8a6e26',
+                    },
+                    boxShadow: {
+                        'inner-slot': 'inset 2px 2px 8px rgba(0,0,0,0.8), inset -1px -1px 2px rgba(255,255,255,0.05)',
+                        'coin-float': '4px 4px 10px rgba(0,0,0,0.6), -1px -1px 2px rgba(255,255,255,0.2)',
+                        'wood-bevel': 'inset 0 2px 4px rgba(255,255,255,0.2), inset 0 -2px 6px rgba(0,0,0,0.6)',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* ベルベットの質感を出すテクスチャ */
+        .bg-texture-velvet {
+            background-color: #0a1a3c;
+            background-image: url("https://www.transparenttextures.com/patterns/felt.png");
+            /* ノイズを乗せて布感を出す */
+        }
+
+        /* 木目の質感を出す（CSSグラデーションで簡易再現） */
+        .bg-wood {
+            background: repeating-linear-gradient(
+                45deg,
+                #5d3a24,
+                #5d3a24 10px,
+                #4a2c1a 10px,
+                #4a2c1a 20px
+            );
+            border-bottom: 4px solid #3e2315;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+        }
+
+        /* ゴールドの文字装飾 */
+        .text-gold-gradient {
+            background: linear-gradient(to bottom, #fceeb5, #d4af37, #8a6e26);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0px 1px 1px rgba(0,0,0,0.3);
+        }
+
+        /* プレート風の装飾 */
+        .brass-plate {
+            background: linear-gradient(135deg, #b8860b, #fceeb5, #b8860b);
+            border: 1px solid #8a6e26;
+            box-shadow: 1px 1px 3px rgba(0,0,0,0.6);
+            color: #3e2315;
+            text-shadow: 0 1px 0 rgba(255,255,255,0.4);
+        }
+        
+        /* コインの穴（くぼみ） */
+        .coin-slot {
+            border-radius: 50%;
+            background: #050e21; /* ベルベットより暗い色 */
+            box-shadow: inset 3px 3px 10px rgba(0,0,0,0.7), inset -1px -1px 3px rgba(255,255,255,0.1);
+            position: relative;
+        }
+
+        /* 穴の縁取り */
+        .coin-slot::after {
+            content: '';
+            position: absolute;
+            top: -2px; left: -2px; right: -2px; bottom: -2px;
+            border-radius: 50%;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body class="bg-texture-velvet text-slate-200 font-serif h-screen w-screen overflow-hidden flex flex-col">
+
+    <!-- ヘッダー：木枠の重厚なデザイン -->
+    <header class="bg-wood z-20 shrink-0">
+        <div class="px-4 py-4 flex justify-between items-center bg-black/10 backdrop-blur-[1px]">
+            <div class="flex items-center gap-3">
+                <!-- ロゴマーク -->
+                <div class="w-10 h-10 rounded-full border-2 border-gold-main bg-velvet flex items-center justify-center shadow-lg">
+                    <i data-lucide="library" class="text-gold-main w-6 h-6"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl font-header font-bold text-gold-gradient tracking-widest">THE COLLECTION</h1>
+                    <p class="text-xs text-gold-light/70 font-sans">オーナー：佐藤 健一 様</p>
+                </div>
+            </div>
+            
+            <!-- 資産価値表示（控えめに） -->
+            <div class="text-right">
+                <div class="brass-plate px-3 py-1 rounded-sm text-xs font-bold tracking-widest font-header">
+                    VALUATION
+                </div>
+                <p class="text-gold-light mt-1 text-sm">¥ 12,500,000</p>
+            </div>
+        </div>
+    </header>
+
+    <!-- タブ切り替え（アルバムのインデックス風） -->
+    <div class="flex bg-wood-dark border-b border-black/50 overflow-x-auto shrink-0 shadow-lg z-10">
+        <button class="px-6 py-3 text-gold-light bg-velvet/50 border-r border-white/10 whitespace-nowrap active:bg-velvet">
+            すべて
+        </button>
+        <button class="px-6 py-3 text-gold-light/60 border-r border-white/10 whitespace-nowrap active:bg-velvet/30">
+            古代ギリシャ
+        </button>
+        <button class="px-6 py-3 text-gold-light/60 border-r border-white/10 whitespace-nowrap font-bold bg-velvet border-t-2 border-gold-main relative">
+            神聖ローマ帝国
+            <span class="absolute top-1 right-1 w-2 h-2 rounded-full bg-red-500"></span>
+        </button>
+        <button class="px-6 py-3 text-gold-light/60 border-r border-white/10 whitespace-nowrap active:bg-velvet/30">
+            英国王室
+        </button>
+    </div>
+
+    <!-- メインエリア：ベルベットのトレイ -->
+    <main class="flex-1 overflow-y-auto p-6 bg-texture-velvet relative">
+        
+        <!-- ページタイトル -->
+        <div class="text-center mb-8 opacity-80">
+            <h2 class="text-2xl font-header text-gold-main mb-1 border-b border-gold-main/30 inline-block pb-2 px-8">
+                Holy Roman Empire
+            </h2>
+            <p class="text-xs text-slate-400 mt-2">16世紀 - 18世紀 都市景観シリーズ</p>
+            <p class="text-xs text-gold-main mt-1">収集率： 2 / 6 枚</p>
+        </div>
+
+        <!-- コイングリッド（トレイ） -->
+        <div class="grid grid-cols-2 gap-x-6 gap-y-10 max-w-lg mx-auto pb-20">
+
+            <!-- コイン 1: 所持している (提示画像のコイン) -->
+            <div class="flex flex-col items-center group" onclick="showDetail('ratisbon')">
+                <div class="relative w-36 h-36 coin-slot flex items-center justify-center mb-3 transition-transform active:scale-95">
+                    <!-- コイン画像 -->
+                    <img src="https://i.imgur.com/kS944t9.jpeg" class="w-[90%] h-[90%] object-contain rounded-full shadow-coin-float z-10" alt="Ratisbon Coin">
+                    <!-- 輝きエフェクト -->
+                    <div class="absolute inset-0 rounded-full bg-gradient-to-tr from-transparent via-white/10 to-transparent opacity-0 group-hover:opacity-100 transition duration-700 pointer-events-none z-20"></div>
+                </div>
+                <!-- プレート（名前） -->
+                <div class="brass-plate w-full text-center py-1 px-2 rounded-sm shadow-lg">
+                    <p class="text-xs font-bold font-header">RATISBONA</p>
+                    <p class="text-[10px] font-sans scale-90">1745年 レーゲンスブルク</p>
+                </div>
+            </div>
+
+            <!-- コイン 2: 所持していない（空のスロット） -->
+            <div class="flex flex-col items-center opacity-60" onclick="showEmptyDetail('nuremberg')">
+                <div class="relative w-36 h-36 coin-slot flex items-center justify-center mb-3">
+                    <!-- うっすらとしたシルエット -->
+                    <div class="w-[85%] h-[85%] rounded-full border border-dashed border-white/20 flex items-center justify-center">
+                        <span class="text-2xl text-white/10 font-header">?</span>
+                    </div>
+                    <!-- 未収集ラベル -->
+                    <span class="absolute bg-black/50 text-slate-300 text-[10px] px-2 py-1 rounded border border-white/10">
+                        未収集
+                    </span>
+                </div>
+                <!-- プレート（空） -->
+                <div class="w-full text-center py-1 px-2 border border-white/10 rounded-sm bg-black/20">
+                    <p class="text-xs text-slate-500 font-header">NUREMBERG</p>
+                    <p class="text-[10px] text-slate-600 scale-90">ニュルンベルク</p>
+                </div>
+            </div>
+
+             <!-- コイン 3: 所持している -->
+             <div class="flex flex-col items-center group">
+                <div class="relative w-36 h-36 coin-slot flex items-center justify-center mb-3 transition-transform active:scale-95">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/e/ea/Alexander_the_Great_coin_cropped.jpg" class="w-[90%] h-[90%] object-cover rounded-full shadow-coin-float z-10" style="filter: sepia(0.4);">
+                </div>
+                <div class="brass-plate w-full text-center py-1 px-2 rounded-sm shadow-lg">
+                    <p class="text-xs font-bold font-header">AUGSBURG</p>
+                    <p class="text-[10px] font-sans scale-90">1694年 アウグスブルク</p>
+                </div>
+            </div>
+
+            <!-- コイン 4: 所持していない -->
+            <div class="flex flex-col items-center opacity-60" onclick="showEmptyDetail('frankfurt')">
+                <div class="relative w-36 h-36 coin-slot flex items-center justify-center mb-3">
+                    <div class="w-[85%] h-[85%] rounded-full border border-dashed border-white/20 flex items-center justify-center">
+                        <span class="text-2xl text-white/10 font-header">?</span>
+                    </div>
+                </div>
+                <div class="w-full text-center py-1 px-2 border border-white/10 rounded-sm bg-black/20">
+                    <p class="text-xs text-slate-500 font-header">FRANKFURT</p>
+                    <p class="text-[10px] text-slate-600 scale-90">フランクフルト</p>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- ■ 詳細ビュー（モーダル）：虫眼鏡で覗いたような演出 -->
+    <div id="modal-detail" class="fixed inset-0 z-50 bg-black/90 hidden flex-col items-center justify-center p-4 transition-opacity duration-500 opacity-0">
+        
+        <!-- 閉じるボタン -->
+        <button onclick="closeModal()" class="absolute top-6 right-6 text-slate-400 hover:text-white p-2">
+            <i data-lucide="x" class="w-8 h-8"></i>
+        </button>
+
+        <!-- コイン拡大表示 -->
+        <div class="relative w-72 h-72 mb-8">
+            <!-- スポットライト効果 -->
+            <div class="absolute inset-0 bg-gradient-to-b from-yellow-100/10 to-transparent rounded-full blur-xl"></div>
+            <img src="https://i.imgur.com/kS944t9.jpeg" class="w-full h-full object-contain drop-shadow-2xl animate-[spin_20s_linear_infinite_reverse]" style="animation-duration: 60s;">
+        </div>
+
+        <!-- 説明カード -->
+        <div class="bg-white text-slate-900 p-6 rounded-sm max-w-sm w-full shadow-2xl relative">
+            <!-- 金色の枠線 -->
+            <div class="absolute inset-1 border border-gold-dark/30 pointer-events-none"></div>
+            <div class="absolute inset-0.5 border border-gold-dark/30 pointer-events-none"></div>
+
+            <h2 class="text-2xl font-header font-bold text-center mb-1 text-slate-800">RATISBONA</h2>
+            <p class="text-center text-xs text-slate-500 font-header tracking-widest mb-4">CITY VIEW 5 DUCATS</p>
+            
+            <p class="text-sm leading-7 font-serif text-slate-700 text-justify mb-4">
+                1745年、神聖ローマ皇帝フランツ1世の戴冠を記念して発行された大型金貨。
+                レーゲンスブルクの美しい都市景観と、上部には「IN TE DOMINE SPERAVI（主よ、我あなたに希望を抱く）」の銘文が刻まれている。
+            </p>
+
+            <div class="border-t border-slate-200 pt-4 mt-4 grid grid-cols-2 gap-4 text-center">
+                <div>
+                    <p class="text-[10px] text-slate-500 uppercase">Grade</p>
+                    <p class="font-bold text-slate-800">MS 64</p>
+                </div>
+                <div>
+                    <p class="text-[10px] text-slate-500 uppercase">Material</p>
+                    <p class="font-bold text-slate-800">Gold (.986)</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ■ 未取得コインの案内（コンシェルジュ風） -->
+    <div id="modal-empty" class="fixed inset-0 z-50 bg-black/90 hidden flex-col items-center justify-center p-6 transition-opacity duration-500 opacity-0">
+        <button onclick="closeModal()" class="absolute top-6 right-6 text-slate-400 hover:text-white"><i data-lucide="x" class="w-8 h-8"></i></button>
+
+        <div class="bg-wood-dark border border-gold-dark/50 p-6 rounded shadow-2xl max-w-sm w-full text-center">
+            <i data-lucide="search" class="w-12 h-12 text-gold-main mx-auto mb-4"></i>
+            <h3 class="text-xl font-header text-gold-light mb-2">未収集のコインです</h3>
+            <p class="text-sm text-slate-300 mb-6 font-serif leading-relaxed">
+                このスロットには<br>
+                <span class="text-gold-main font-bold">「ニュルンベルク 都市景観 ラムダカット」</span><br>
+                が収まります。
+            </p>
+            <p class="text-xs text-slate-400 mb-6">
+                現在、市場に2枚の在庫が確認されています。<br>
+                専門家に相談しますか？
+            </p>
+            <button class="w-full bg-gold-main text-wood-dark font-bold py-3 rounded-sm shadow hover:bg-gold-light transition">
+                コンシェルジュに問い合わせる
+            </button>
+        </div>
+    </div>
+
+    <!-- フッターナビゲーション -->
+    <nav class="bg-wood-dark border-t border-black/50 pb-safe">
+        <div class="flex justify-around items-center h-16 px-2">
+            <button class="flex flex-col items-center gap-1 text-gold-main w-1/3">
+                <i data-lucide="book-open" class="w-5 h-5"></i>
+                <span class="text-[10px] font-serif tracking-widest">アルバム</span>
+            </button>
+            <button class="flex flex-col items-center gap-1 text-gold-light/40 w-1/3">
+                <i data-lucide="gem" class="w-5 h-5"></i>
+                <span class="text-[10px] font-serif tracking-widest">資産管理</span>
+            </button>
+            <button class="flex flex-col items-center gap-1 text-gold-light/40 w-1/3">
+                <i data-lucide="user" class="w-5 h-5"></i>
+                <span class="text-[10px] font-serif tracking-widest">会員証</span>
+            </button>
+        </div>
+    </nav>
+
+    <script>
+        lucide.createIcons();
+
+        // モーダル表示ロジック
+        function showDetail(id) {
+            const modal = document.getElementById('modal-detail');
+            modal.classList.remove('hidden');
+            setTimeout(() => modal.classList.remove('opacity-0'), 10);
+        }
+
+        function showEmptyDetail(id) {
+            const modal = document.getElementById('modal-empty');
+            modal.classList.remove('hidden');
+            setTimeout(() => modal.classList.remove('opacity-0'), 10);
+        }
+
+        function closeModal() {
+            const modals = [document.getElementById('modal-detail'), document.getElementById('modal-empty')];
+            modals.forEach(m => {
+                m.classList.add('opacity-0');
+                setTimeout(() => m.classList.add('hidden'), 500);
+            });
+        }
+    </script>
+</body>
+</html>
