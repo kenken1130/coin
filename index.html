@@ -1,321 +1,394 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Royal Coin Album</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/lucide@latest"></script>
-    <!-- 格式高い明朝体フォント -->
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Shippori+Mincho:wght@400;600&display=swap" rel="stylesheet">
-    
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: {
-                        serif: ['"Shippori Mincho"', 'serif'],
-                        header: ['"Cinzel"', 'serif'],
-                    },
-                    colors: {
-                        'velvet': '#0a1a3c', // 深いベルベットブルー
-                        'velvet-dark': '#050e21',
-                        'wood-light': '#8b5e3c',
-                        'wood-dark': '#5d3a24',
-                        'gold-light': '#fceeb5',
-                        'gold-main': '#d4af37',
-                        'gold-dark': '#8a6e26',
-                    },
-                    boxShadow: {
-                        'inner-slot': 'inset 2px 2px 8px rgba(0,0,0,0.8), inset -1px -1px 2px rgba(255,255,255,0.05)',
-                        'coin-float': '4px 4px 10px rgba(0,0,0,0.6), -1px -1px 2px rgba(255,255,255,0.2)',
-                        'wood-bevel': 'inset 0 2px 4px rgba(255,255,255,0.2), inset 0 -2px 6px rgba(0,0,0,0.6)',
-                    }
-                }
-            }
-        }
-    </script>
-    <style>
-        /* ベルベットの質感を出すテクスチャ */
-        .bg-texture-velvet {
-            background-color: #0a1a3c;
-            background-image: url("https://www.transparenttextures.com/patterns/felt.png");
-            /* ノイズを乗せて布感を出す */
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GOLFIN | Move the World.</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800&family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #040c1a;
+      --card: #09182d;
+      --line: rgba(54, 228, 188, 0.35);
+      --text: #d7e6f7;
+      --muted: #89a1bd;
+      --primary: #57f0ba;
+      --primary-dark: #1dbb8d;
+      --glow: 0 0 0 1px rgba(87,240,186,.25), 0 0 30px rgba(44,255,189,.18);
+    }
 
-        /* 木目の質感を出す（CSSグラデーションで簡易再現） */
-        .bg-wood {
-            background: repeating-linear-gradient(
-                45deg,
-                #5d3a24,
-                #5d3a24 10px,
-                #4a2c1a 10px,
-                #4a2c1a 20px
-            );
-            border-bottom: 4px solid #3e2315;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
-        }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Inter", "Noto Sans JP", sans-serif;
+      color: var(--text);
+      background: radial-gradient(circle at 70% 0%, #0b2044 0%, #061226 38%, #040c1a 100%);
+      line-height: 1.45;
+    }
 
-        /* ゴールドの文字装飾 */
-        .text-gold-gradient {
-            background: linear-gradient(to bottom, #fceeb5, #d4af37, #8a6e26);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            text-shadow: 0px 1px 1px rgba(0,0,0,0.3);
-        }
+    .container { width: min(1120px, 92vw); margin: 0 auto; }
 
-        /* プレート風の装飾 */
-        .brass-plate {
-            background: linear-gradient(135deg, #b8860b, #fceeb5, #b8860b);
-            border: 1px solid #8a6e26;
-            box-shadow: 1px 1px 3px rgba(0,0,0,0.6);
-            color: #3e2315;
-            text-shadow: 0 1px 0 rgba(255,255,255,0.4);
-        }
-        
-        /* コインの穴（くぼみ） */
-        .coin-slot {
-            border-radius: 50%;
-            background: #050e21; /* ベルベットより暗い色 */
-            box-shadow: inset 3px 3px 10px rgba(0,0,0,0.7), inset -1px -1px 3px rgba(255,255,255,0.1);
-            position: relative;
-        }
+    .topbar {
+      position: sticky; top: 0; z-index: 10;
+      backdrop-filter: blur(10px);
+      background: linear-gradient(180deg, rgba(2,9,22,.92), rgba(2,9,22,.6));
+      border-bottom: 1px solid rgba(89,197,255,.18);
+    }
 
-        /* 穴の縁取り */
-        .coin-slot::after {
-            content: '';
-            position: absolute;
-            top: -2px; left: -2px; right: -2px; bottom: -2px;
-            border-radius: 50%;
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            pointer-events: none;
-        }
-    </style>
+    .topbar-inner {
+      height: 78px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+
+    .logo { font-size: 1.7rem; font-weight: 800; letter-spacing: .08em; }
+    .logo span { color: var(--primary); }
+    .nav { display: flex; gap: 1.6rem; }
+    .nav a { color: #c8d8ea; text-decoration: none; font-size: .95rem; }
+    .cta {
+      background: linear-gradient(90deg, var(--primary-dark), var(--primary));
+      color: #032518; border: none; border-radius: 10px;
+      padding: .8rem 1.25rem; font-weight: 700; cursor: pointer;
+      box-shadow: 0 8px 20px rgba(69,255,197,.25);
+    }
+
+    .hero {
+      padding: 3.25rem 0 2rem;
+      display: grid; grid-template-columns: 1.1fr .9fr; gap: 1.3rem;
+      align-items: center;
+    }
+
+    .hero-bg {
+      background:
+        linear-gradient(120deg, rgba(2,8,19,.65), rgba(2,8,19,.2)),
+        url('https://images.unsplash.com/photo-1592919505780-303950717480?q=80&w=1800&auto=format&fit=crop');
+      background-size: cover; background-position: center;
+      border: 1px solid rgba(89,197,255,.25);
+      border-radius: 18px;
+      padding: 3.5rem 2.25rem;
+      box-shadow: var(--glow);
+      min-height: 410px;
+      display: grid;
+      align-content: center;
+    }
+
+    .kicker { font-weight: 700; color: #a8c2dd; font-size: .95rem; letter-spacing: .04em; }
+    h1 { margin: .35rem 0 .75rem; font-size: clamp(2.3rem, 5vw, 4.2rem); line-height: 1.05; }
+    h1 span { color: var(--primary); }
+    .sub { max-width: 540px; color: #bed0e8; margin-bottom: 1.25rem; }
+
+    .hero-actions { display: flex; gap: .8rem; align-items: center; flex-wrap: wrap; }
+    .ghost {
+      background: rgba(9,24,45,.7); color: #d4e4f3; border: 1px solid rgba(126,184,255,.3);
+      border-radius: 10px; padding: .78rem 1.1rem; font-weight: 600;
+    }
+
+    .phone-panel {
+      border: 1px solid rgba(95,207,255,.25);
+      border-radius: 18px;
+      padding: 1rem;
+      background: linear-gradient(180deg, rgba(12,29,51,.85), rgba(5,15,28,.85));
+      box-shadow: var(--glow);
+      min-height: 410px;
+      display: grid;
+      align-content: center;
+      justify-items: center;
+      gap: .7rem;
+    }
+
+    .phone {
+      width: 210px;
+      aspect-ratio: 9 / 19;
+      border-radius: 28px;
+      border: 2px solid #20354f;
+      overflow: hidden;
+      box-shadow: 0 18px 40px rgba(0,0,0,.45);
+      background-size: cover;
+      background-position: center;
+    }
+
+    .cards {
+      margin-top: 1rem;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: .85rem;
+    }
+
+    .card {
+      background: linear-gradient(180deg, rgba(7,19,37,.9), rgba(4,11,24,.9));
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 1rem;
+      box-shadow: inset 0 0 0 1px rgba(123,227,255,.08);
+    }
+
+    .card h3 { margin: 0 0 .45rem; color: var(--primary); font-size: 1.06rem; }
+    .card p { margin: 0; color: var(--muted); font-size: .92rem; }
+
+    .how {
+      margin-top: .85rem;
+      background: rgba(5,15,29,.85);
+      border: 1px solid rgba(87,240,186,.3);
+      border-radius: 14px;
+      padding: 1rem;
+    }
+
+    .steps {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: .65rem;
+    }
+
+    .step {
+      padding: .7rem;
+      border: 1px solid rgba(130,174,224,.23);
+      border-radius: 10px;
+      background: rgba(8,20,39,.8);
+      font-size: .83rem;
+    }
+
+    .step strong {
+      display: inline-flex;
+      width: 1.7rem; height: 1.7rem;
+      border-radius: 999px;
+      justify-content: center; align-items: center;
+      color: #042214;
+      background: linear-gradient(180deg, #8bffd8, var(--primary));
+      margin-bottom: .45rem;
+    }
+
+    .duo {
+      margin-top: .9rem;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: .85rem;
+    }
+
+    .identity {
+      display: grid;
+      grid-template-columns: 130px 1fr;
+      gap: .9rem;
+      align-items: center;
+    }
+
+    .avatar {
+      width: 120px; height: 120px;
+      border-radius: 12px;
+      border: 1px solid var(--line);
+      background: url('https://images.unsplash.com/photo-1566753323558-f4e0952af115?q=80&w=300&auto=format&fit=crop') center/cover;
+    }
+
+    .statline {
+      display: grid;
+      grid-template-columns: repeat(3,1fr);
+      gap: .5rem;
+      margin-top: .75rem;
+    }
+
+    .mini {
+      padding: .5rem;
+      text-align: center;
+      background: rgba(8,20,39,.75);
+      border: 1px solid rgba(145,179,214,.2);
+      border-radius: 8px;
+      font-size: .8rem;
+    }
+
+    .gallery {
+      margin-top: .9rem;
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: .5rem;
+    }
+
+    .thumb {
+      border-radius: 10px;
+      border: 1px solid rgba(135,180,233,.28);
+      min-height: 130px;
+      background-size: cover;
+      background-position: center;
+    }
+
+    .triple {
+      margin-top: .9rem;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: .85rem;
+    }
+
+    .community {
+      margin-top: .9rem;
+      display: grid;
+      grid-template-columns: 1.2fr .8fr;
+      gap: .85rem;
+    }
+
+    .numbers {
+      display: grid;
+      grid-template-columns: repeat(4,1fr);
+      gap: .5rem;
+    }
+
+    .num {
+      background: rgba(6,17,34,.82);
+      border: 1px solid rgba(97,156,218,.25);
+      border-radius: 8px;
+      padding: .7rem;
+      text-align: center;
+    }
+
+    .num b { font-size: 1.75rem; color: var(--primary); display: block; }
+
+    .bottom-cta {
+      margin: 1rem 0 1.4rem;
+      padding: 1.3rem;
+      border-radius: 14px;
+      border: 1px solid rgba(87,240,186,.35);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: .8rem;
+      background: linear-gradient(100deg, rgba(8,20,43,.95), rgba(16,60,57,.7));
+    }
+
+    footer {
+      border-top: 1px solid rgba(104,153,210,.24);
+      padding: 1rem 0 2.2rem;
+      color: #8da7c6;
+      font-size: .9rem;
+    }
+
+    @media (max-width: 980px) {
+      .hero, .cards, .duo, .triple, .community { grid-template-columns: 1fr; }
+      .steps { grid-template-columns: repeat(2,1fr); }
+      .gallery { grid-template-columns: repeat(3,1fr); }
+      .numbers { grid-template-columns: repeat(2,1fr); }
+      .nav { display: none; }
+    }
+  </style>
 </head>
-<body class="bg-texture-velvet text-slate-200 font-serif h-screen w-screen overflow-hidden flex flex-col">
-
-    <!-- ヘッダー：木枠の重厚なデザイン -->
-    <header class="bg-wood z-20 shrink-0">
-        <div class="px-4 py-4 flex justify-between items-center bg-black/10 backdrop-blur-[1px]">
-            <div class="flex items-center gap-3">
-                <!-- ロゴマーク -->
-                <div class="w-10 h-10 rounded-full border-2 border-gold-main bg-velvet flex items-center justify-center shadow-lg">
-                    <i data-lucide="library" class="text-gold-main w-6 h-6"></i>
-                </div>
-                <div>
-                    <h1 class="text-xl font-header font-bold text-gold-gradient tracking-widest">THE COLLECTION</h1>
-                    <p class="text-xs text-gold-light/70 font-sans">オーナー：佐藤 健一 様</p>
-                </div>
-            </div>
-            
-            <!-- 資産価値表示（控えめに） -->
-            <div class="text-right">
-                <div class="brass-plate px-3 py-1 rounded-sm text-xs font-bold tracking-widest font-header">
-                    VALUATION
-                </div>
-                <p class="text-gold-light mt-1 text-sm">¥ 12,500,000</p>
-            </div>
-        </div>
-    </header>
-
-    <!-- タブ切り替え（アルバムのインデックス風） -->
-    <div class="flex bg-wood-dark border-b border-black/50 overflow-x-auto shrink-0 shadow-lg z-10">
-        <button class="px-6 py-3 text-gold-light bg-velvet/50 border-r border-white/10 whitespace-nowrap active:bg-velvet">
-            すべて
-        </button>
-        <button class="px-6 py-3 text-gold-light/60 border-r border-white/10 whitespace-nowrap active:bg-velvet/30">
-            古代ギリシャ
-        </button>
-        <button class="px-6 py-3 text-gold-light/60 border-r border-white/10 whitespace-nowrap font-bold bg-velvet border-t-2 border-gold-main relative">
-            神聖ローマ帝国
-            <span class="absolute top-1 right-1 w-2 h-2 rounded-full bg-red-500"></span>
-        </button>
-        <button class="px-6 py-3 text-gold-light/60 border-r border-white/10 whitespace-nowrap active:bg-velvet/30">
-            英国王室
-        </button>
+<body>
+  <header class="topbar">
+    <div class="container topbar-inner">
+      <div class="logo"><span>◔</span> GOLFIN</div>
+      <nav class="nav">
+        <a href="#features">Features</a>
+        <a href="#screens">Screens</a>
+        <a href="#tournaments">Tournament</a>
+        <a href="#faq">FAQ</a>
+      </nav>
+      <button class="cta">Pre-register →</button>
     </div>
+  </header>
 
-    <!-- メインエリア：ベルベットのトレイ -->
-    <main class="flex-1 overflow-y-auto p-6 bg-texture-velvet relative">
-        
-        <!-- ページタイトル -->
-        <div class="text-center mb-8 opacity-80">
-            <h2 class="text-2xl font-header text-gold-main mb-1 border-b border-gold-main/30 inline-block pb-2 px-8">
-                Holy Roman Empire
-            </h2>
-            <p class="text-xs text-slate-400 mt-2">16世紀 - 18世紀 都市景観シリーズ</p>
-            <p class="text-xs text-gold-main mt-1">収集率： 2 / 6 枚</p>
+  <main class="container">
+    <section class="hero">
+      <div class="hero-bg">
+        <div class="kicker">伝統と最先端が交わる。</div>
+        <h1>Move the <span>World.</span></h1>
+        <p class="sub">AIスコア認識 × GPS位置証明 × コミュニティ大会で、あなたの一打を世界の価値へつなげるゴルププラットフォーム。</p>
+        <div class="hero-actions">
+          <button class="cta">事前登録する</button>
+          <button class="ghost">▶ PLAY MOVIE</button>
         </div>
+      </div>
+      <aside class="phone-panel">
+        <div class="phone" style="background-image:url('https://images.unsplash.com/photo-1593111774240-d529f12cf4bb?q=80&w=500&auto=format&fit=crop')"></div>
+        <div class="phone" style="background-image:url('https://images.unsplash.com/photo-1519112232436-9923c6ba3d26?q=80&w=500&auto=format&fit=crop')"></div>
+      </aside>
+    </section>
 
-        <!-- コイングリッド（トレイ） -->
-        <div class="grid grid-cols-2 gap-x-6 gap-y-10 max-w-lg mx-auto pb-20">
+    <section id="features" class="cards">
+      <article class="card"><h3>AIスコア認識</h3><p>スコアカードを撮るだけで自動集計。不正検知と補正も対応。</p></article>
+      <article class="card"><h3>GPS位置証明</h3><p>プレー場所と時間を高精度で証明し、信頼できる記録を生成。</p></article>
+      <article class="card"><h3>トーナメント</h3><p>公式・コミュニティ大会の両方でランキングと報酬を提供。</p></article>
+      <article class="card"><h3>LIVE VOTE</h3><p>コミュニティ投票で注目プレーを可視化。応援が価値になる。</p></article>
+      <article class="card"><h3>GIFT ECONOMY</h3><p>チップ・ギフト・バッジでファンと選手の接点を拡張。</p></article>
+      <article class="card"><h3>GLOBAL COMMUNITY</h3><p>世界中のゴルファーが同じルール・同じ証明でつながる。</p></article>
+    </section>
 
-            <!-- コイン 1: 所持している (提示画像のコイン) -->
-            <div class="flex flex-col items-center group" onclick="showDetail('ratisbon')">
-                <div class="relative w-36 h-36 coin-slot flex items-center justify-center mb-3 transition-transform active:scale-95">
-                    <!-- コイン画像 -->
-                    <img src="https://i.imgur.com/kS944t9.jpeg" class="w-[90%] h-[90%] object-contain rounded-full shadow-coin-float z-10" alt="Ratisbon Coin">
-                    <!-- 輝きエフェクト -->
-                    <div class="absolute inset-0 rounded-full bg-gradient-to-tr from-transparent via-white/10 to-transparent opacity-0 group-hover:opacity-100 transition duration-700 pointer-events-none z-20"></div>
-                </div>
-                <!-- プレート（名前） -->
-                <div class="brass-plate w-full text-center py-1 px-2 rounded-sm shadow-lg">
-                    <p class="text-xs font-bold font-header">RATISBONA</p>
-                    <p class="text-[10px] font-sans scale-90">1745年 レーゲンスブルク</p>
-                </div>
-            </div>
+    <section class="how">
+      <h3 style="margin:0 0 .75rem;color:#9cefd0;letter-spacing:.06em">HOW IT WORKS</h3>
+      <div class="steps">
+        <div class="step"><strong>1</strong>撮る<br>スコアカードを撮影</div>
+        <div class="step"><strong>2</strong>AI認識<br>自動でスコア化</div>
+        <div class="step"><strong>3</strong>確認<br>内容を編集・確定</div>
+        <div class="step"><strong>4</strong>GPS証明<br>位置精度を記録</div>
+        <div class="step"><strong>5</strong>投稿<br>コミュニティへ公開</div>
+      </div>
+    </section>
 
-            <!-- コイン 2: 所持していない（空のスロット） -->
-            <div class="flex flex-col items-center opacity-60" onclick="showEmptyDetail('nuremberg')">
-                <div class="relative w-36 h-36 coin-slot flex items-center justify-center mb-3">
-                    <!-- うっすらとしたシルエット -->
-                    <div class="w-[85%] h-[85%] rounded-full border border-dashed border-white/20 flex items-center justify-center">
-                        <span class="text-2xl text-white/10 font-header">?</span>
-                    </div>
-                    <!-- 未収集ラベル -->
-                    <span class="absolute bg-black/50 text-slate-300 text-[10px] px-2 py-1 rounded border border-white/10">
-                        未収集
-                    </span>
-                </div>
-                <!-- プレート（空） -->
-                <div class="w-full text-center py-1 px-2 border border-white/10 rounded-sm bg-black/20">
-                    <p class="text-xs text-slate-500 font-header">NUREMBERG</p>
-                    <p class="text-[10px] text-slate-600 scale-90">ニュルンベルク</p>
-                </div>
-            </div>
-
-             <!-- コイン 3: 所持している -->
-             <div class="flex flex-col items-center group">
-                <div class="relative w-36 h-36 coin-slot flex items-center justify-center mb-3 transition-transform active:scale-95">
-                    <img src="https://upload.wikimedia.org/wikipedia/commons/e/ea/Alexander_the_Great_coin_cropped.jpg" class="w-[90%] h-[90%] object-cover rounded-full shadow-coin-float z-10" style="filter: sepia(0.4);">
-                </div>
-                <div class="brass-plate w-full text-center py-1 px-2 rounded-sm shadow-lg">
-                    <p class="text-xs font-bold font-header">AUGSBURG</p>
-                    <p class="text-[10px] font-sans scale-90">1694年 アウグスブルク</p>
-                </div>
-            </div>
-
-            <!-- コイン 4: 所持していない -->
-            <div class="flex flex-col items-center opacity-60" onclick="showEmptyDetail('frankfurt')">
-                <div class="relative w-36 h-36 coin-slot flex items-center justify-center mb-3">
-                    <div class="w-[85%] h-[85%] rounded-full border border-dashed border-white/20 flex items-center justify-center">
-                        <span class="text-2xl text-white/10 font-header">?</span>
-                    </div>
-                </div>
-                <div class="w-full text-center py-1 px-2 border border-white/10 rounded-sm bg-black/20">
-                    <p class="text-xs text-slate-500 font-header">FRANKFURT</p>
-                    <p class="text-[10px] text-slate-600 scale-90">フランクフルト</p>
-                </div>
-            </div>
-
+    <section class="duo">
+      <article class="card identity">
+        <div class="avatar"></div>
+        <div>
+          <h3>YOUR GOLF IDENTITY</h3>
+          <p>Taro Golfin / Trust Score 9.52 (Legend)</p>
+          <div class="statline">
+            <div class="mini">Best 65</div>
+            <div class="mini">Countries 23</div>
+            <div class="mini">Badges 42</div>
+          </div>
         </div>
-    </main>
+      </article>
+      <article class="card" style="background-image:linear-gradient(120deg, rgba(7,17,33,.8), rgba(8,40,35,.5)), url('https://images.unsplash.com/photo-1591805556120-eec1f3f2ad44?q=80&w=1200&auto=format&fit=crop'); background-size:cover; background-position:center;">
+        <h3>GAME MODE</h3>
+        <p>現実のコースが3Dゲーム化。リアルな難易度で対戦・練習。</p>
+        <button class="ghost" style="margin-top:.9rem">今すぐ体験する</button>
+      </article>
+    </section>
 
-    <!-- ■ 詳細ビュー（モーダル）：虫眼鏡で覗いたような演出 -->
-    <div id="modal-detail" class="fixed inset-0 z-50 bg-black/90 hidden flex-col items-center justify-center p-4 transition-opacity duration-500 opacity-0">
-        
-        <!-- 閉じるボタン -->
-        <button onclick="closeModal()" class="absolute top-6 right-6 text-slate-400 hover:text-white p-2">
-            <i data-lucide="x" class="w-8 h-8"></i>
-        </button>
+    <section id="screens" class="card" style="margin-top:.9rem;">
+      <h3>APP SCREENS</h3>
+      <div class="gallery">
+        <div class="thumb" style="background-image:url('https://images.unsplash.com/photo-1616077167599-cad3639f6e2f?q=80&w=400&auto=format&fit=crop')"></div>
+        <div class="thumb" style="background-image:url('https://images.unsplash.com/photo-1556740749-887f6717d7e4?q=80&w=400&auto=format&fit=crop')"></div>
+        <div class="thumb" style="background-image:url('https://images.unsplash.com/photo-1514894786521-17e0be39352f?q=80&w=400&auto=format&fit=crop')"></div>
+        <div class="thumb" style="background-image:url('https://images.unsplash.com/photo-1523251343397-9225e4f2f6d6?q=80&w=400&auto=format&fit=crop')"></div>
+        <div class="thumb" style="background-image:url('https://images.unsplash.com/photo-1616531770192-6eaea74c2456?q=80&w=400&auto=format&fit=crop')"></div>
+        <div class="thumb" style="background-image:url('https://images.unsplash.com/photo-1576267423445-b2e0074d68a4?q=80&w=400&auto=format&fit=crop')"></div>
+        <div class="thumb" style="display:grid;place-items:center;background:rgba(8,20,39,.9);font-weight:700;border:1px solid var(--line)">DOWNLOAD<br>COMING SOON</div>
+      </div>
+    </section>
 
-        <!-- コイン拡大表示 -->
-        <div class="relative w-72 h-72 mb-8">
-            <!-- スポットライト効果 -->
-            <div class="absolute inset-0 bg-gradient-to-b from-yellow-100/10 to-transparent rounded-full blur-xl"></div>
-            <img src="https://i.imgur.com/kS944t9.jpeg" class="w-full h-full object-contain drop-shadow-2xl animate-[spin_20s_linear_infinite_reverse]" style="animation-duration: 60s;">
+    <section id="tournaments" class="triple">
+      <article class="card"><h3>OPEN TOURNAMENT</h3><p>誰でも参加できるオープン大会。初心者歓迎。</p></article>
+      <article class="card"><h3>SPONSORED TOURNAMENT</h3><p>スポンサー協賛で報酬付き。注目度の高い大会形式。</p></article>
+      <article class="card"><h3>CHAMPION'S CUP</h3><p>選抜プレーヤーによる頂上決戦。真の王者を決める。</p></article>
+    </section>
+
+    <section class="community">
+      <article class="card">
+        <h3>BUILT BY GOLFERS, FOR THE WORLD</h3>
+        <div class="numbers">
+          <div class="num"><b>200+</b>Founder</div>
+          <div class="num"><b>3年</b>開発</div>
+          <div class="num"><b>128</b>Countries</div>
+          <div class="num"><b>∞</b>Possibilities</div>
         </div>
+      </article>
+      <article class="card" style="background-image:url('https://images.unsplash.com/photo-1521737604893-d14cc237f11d?q=80&w=1000&auto=format&fit=crop'); background-size:cover; background-position:center;"></article>
+    </section>
 
-        <!-- 説明カード -->
-        <div class="bg-white text-slate-900 p-6 rounded-sm max-w-sm w-full shadow-2xl relative">
-            <!-- 金色の枠線 -->
-            <div class="absolute inset-1 border border-gold-dark/30 pointer-events-none"></div>
-            <div class="absolute inset-0.5 border border-gold-dark/30 pointer-events-none"></div>
+    <section class="bottom-cta" id="faq">
+      <div>
+        <div class="kicker">一打が、世界を変える。</div>
+        <h1 style="font-size:clamp(2rem,4vw,3rem);margin:0">Move the <span>World.</span></h1>
+        <p class="sub" style="margin:.4rem 0 0">今すぐ事前登録して、未来のゴルフを一緒に創りましょう。</p>
+      </div>
+      <button class="cta" style="padding:1rem 2rem;font-size:1.1rem">事前登録する →</button>
+    </section>
+  </main>
 
-            <h2 class="text-2xl font-header font-bold text-center mb-1 text-slate-800">RATISBONA</h2>
-            <p class="text-center text-xs text-slate-500 font-header tracking-widest mb-4">CITY VIEW 5 DUCATS</p>
-            
-            <p class="text-sm leading-7 font-serif text-slate-700 text-justify mb-4">
-                1745年、神聖ローマ皇帝フランツ1世の戴冠を記念して発行された大型金貨。
-                レーゲンスブルクの美しい都市景観と、上部には「IN TE DOMINE SPERAVI（主よ、我あなたに希望を抱く）」の銘文が刻まれている。
-            </p>
-
-            <div class="border-t border-slate-200 pt-4 mt-4 grid grid-cols-2 gap-4 text-center">
-                <div>
-                    <p class="text-[10px] text-slate-500 uppercase">Grade</p>
-                    <p class="font-bold text-slate-800">MS 64</p>
-                </div>
-                <div>
-                    <p class="text-[10px] text-slate-500 uppercase">Material</p>
-                    <p class="font-bold text-slate-800">Gold (.986)</p>
-                </div>
-            </div>
-        </div>
+  <footer>
+    <div class="container" style="display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap;">
+      <div><strong style="color:#d3e6fa">GOLFIN</strong><br>Move the World.</div>
+      <div>© 2026 GOLFIN Inc. All Rights Reserved.</div>
     </div>
-
-    <!-- ■ 未取得コインの案内（コンシェルジュ風） -->
-    <div id="modal-empty" class="fixed inset-0 z-50 bg-black/90 hidden flex-col items-center justify-center p-6 transition-opacity duration-500 opacity-0">
-        <button onclick="closeModal()" class="absolute top-6 right-6 text-slate-400 hover:text-white"><i data-lucide="x" class="w-8 h-8"></i></button>
-
-        <div class="bg-wood-dark border border-gold-dark/50 p-6 rounded shadow-2xl max-w-sm w-full text-center">
-            <i data-lucide="search" class="w-12 h-12 text-gold-main mx-auto mb-4"></i>
-            <h3 class="text-xl font-header text-gold-light mb-2">未収集のコインです</h3>
-            <p class="text-sm text-slate-300 mb-6 font-serif leading-relaxed">
-                このスロットには<br>
-                <span class="text-gold-main font-bold">「ニュルンベルク 都市景観 ラムダカット」</span><br>
-                が収まります。
-            </p>
-            <p class="text-xs text-slate-400 mb-6">
-                現在、市場に2枚の在庫が確認されています。<br>
-                専門家に相談しますか？
-            </p>
-            <button class="w-full bg-gold-main text-wood-dark font-bold py-3 rounded-sm shadow hover:bg-gold-light transition">
-                コンシェルジュに問い合わせる
-            </button>
-        </div>
-    </div>
-
-    <!-- フッターナビゲーション -->
-    <nav class="bg-wood-dark border-t border-black/50 pb-safe">
-        <div class="flex justify-around items-center h-16 px-2">
-            <button class="flex flex-col items-center gap-1 text-gold-main w-1/3">
-                <i data-lucide="book-open" class="w-5 h-5"></i>
-                <span class="text-[10px] font-serif tracking-widest">アルバム</span>
-            </button>
-            <button class="flex flex-col items-center gap-1 text-gold-light/40 w-1/3">
-                <i data-lucide="gem" class="w-5 h-5"></i>
-                <span class="text-[10px] font-serif tracking-widest">資産管理</span>
-            </button>
-            <button class="flex flex-col items-center gap-1 text-gold-light/40 w-1/3">
-                <i data-lucide="user" class="w-5 h-5"></i>
-                <span class="text-[10px] font-serif tracking-widest">会員証</span>
-            </button>
-        </div>
-    </nav>
-
-    <script>
-        lucide.createIcons();
-
-        // モーダル表示ロジック
-        function showDetail(id) {
-            const modal = document.getElementById('modal-detail');
-            modal.classList.remove('hidden');
-            setTimeout(() => modal.classList.remove('opacity-0'), 10);
-        }
-
-        function showEmptyDetail(id) {
-            const modal = document.getElementById('modal-empty');
-            modal.classList.remove('hidden');
-            setTimeout(() => modal.classList.remove('opacity-0'), 10);
-        }
-
-        function closeModal() {
-            const modals = [document.getElementById('modal-detail'), document.getElementById('modal-empty')];
-            modals.forEach(m => {
-                m.classList.add('opacity-0');
-                setTimeout(() => m.classList.add('hidden'), 500);
-            });
-        }
-    </script>
+  </footer>
 </body>
 </html>
